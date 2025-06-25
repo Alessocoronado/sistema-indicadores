@@ -1,8 +1,3 @@
-// src/lib/api/indicadoresApi.js
-/* ================================================================
-   ✅ SOLUCIÓN DEFINITIVA PARA MIXED CONTENT Y URLS
-   ================================================================ */
-
 // 🔧 CONFIGURACIÓN FLEXIBLE DE ENTORNOS
 const ENV_CONFIG = {
   development: {
@@ -11,7 +6,7 @@ const ENV_CONFIG = {
     protocol: 'http'
   },
   production: {
-    backendUrl: 'https://backend-indicadores-production.up.railway.app',
+    backendUrl: import.meta.env.VITE_API_URL,
     protocol: 'https',
     enforceHttps: true
   }
