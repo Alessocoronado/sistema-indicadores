@@ -11,10 +11,8 @@ const ENV_CONFIG = {
     protocol: 'http'
   },
   production: {
-    // 🎯 FORZAR URL HTTPS HARDCODED COMO ÚLTIMO RECURSO
     backendUrl: import.meta.env.VITE_API_URL || 
-                process.env.VITE_API_URL ||
-                'https://backend-indicadores-production.up.railway.app', // HARDCODED HTTPS
+                'https://backend-indicadores-production.up.railway.app',
     protocol: 'https',
     enforceHttps: true
   }
@@ -23,25 +21,20 @@ const ENV_CONFIG = {
 // 🔍 DETECCIÓN AUTOMÁTICA DE BACKEND URL
 function detectBackendUrl() {
   const currentDomain = window.location.hostname;
+  const apiUrl = import.meta.env.VITE_API_URL;
   
-  // 🚨 SOLUCIÓN TEMPORAL: Forzar HTTPS siempre
-  const baseBackendUrl = 'backend-indicadores-production.up.railway.app';
-  const httpsUrl = `https://${baseBackendUrl}`;
+  if (apiUrl) {
+    console.log('🔒 [API] Usando URL desde variables de entorno:', apiUrl);
+    return apiUrl.startsWith('https://') ? apiUrl : `https://${apiUrl}`;
+  }
   
-  console.log('🔒 [API] Forzando URL HTTPS del backend:', httpsUrl);
+  // Solo para desarrollo local
+  if (currentDomain.includes('localhost')) {
+    return 'http://localhost:8000';
+  }
   
-  // Lista de posibles URLs de backend (todas HTTPS)
-  const possibleBackendUrls = [
-    httpsUrl, // URL principal forzada a HTTPS
-    'https://sistema-indicadores-backend-production.up.railway.app',
-    'https://backend-sistema-indicadores-production.up.railway.app',
-    
-    // Solo para desarrollo local
-    currentDomain.includes('localhost') ? 'http://localhost:8000' : null
-  ].filter(Boolean);
-  
-  console.log('🔍 [API] URLs de backend detectadas:', possibleBackendUrls);
-  return possibleBackendUrls[0];
+  // Fallback seguro para producción
+  return 'https://backend-indicadores-production.up.railway.app';
 }
 
 /* ================================================================
@@ -49,7 +42,6 @@ function detectBackendUrl() {
    ================================================================ */
 function detectEnvironment() {
   const hostname = window.location.hostname;
-  const protocol = window.location.protocol;
   
   // ✅ Desarrollo local
   if (ENV_CONFIG.development.hostnames.includes(hostname)) {
@@ -61,37 +53,9 @@ function detectEnvironment() {
     };
   }
   
-  // ✅ Producción (Railway, Vercel, etc.)
+  // ✅ Producción (Railway)
   console.log('🚀 [API] Entorno: PRODUCCIÓN');
-  console.log('🔍 [API] VITE_API_URL:', import.meta.env.VITE_API_URL);
-  console.log('🔍 [API] process.env.VITE_API_URL:', process.env.VITE_API_URL);
-  console.log('🔍 [API] detectBackendUrl():', detectBackendUrl());
-  
-  let backendUrl = ENV_CONFIG.production.backendUrl.trim();
-  console.log('🔍 [API] backendUrl inicial:', backendUrl);
-  
-  // 🚨 FORZAR HTTPS SIEMPRE EN PRODUCCIÓN
-  if (!backendUrl.startsWith('https://')) {
-    if (backendUrl.startsWith('http://')) {
-      backendUrl = backendUrl.replace('http://', 'https://');
-      console.log('🔒 [API] Convertido HTTP→HTTPS:', backendUrl);
-    } else if (!/^https?:\/\//i.test(backendUrl)) {
-      backendUrl = `https://${backendUrl}`;
-      console.log('🔒 [API] Añadido protocolo HTTPS:', backendUrl);
-    }
-  }
-  
-  // 🛡️ VERIFICACIÓN FINAL: Solo permitir HTTPS en producción
-  if (!backendUrl.startsWith('https://')) {
-    console.error('❌ [API] Backend URL no es HTTPS:', backendUrl);
-    backendUrl = 'https://backend-indicadores-production.up.railway.app';
-    console.log('🔒 [API] Usando URL hardcoded segura:', backendUrl);
-  }
-  
-  // Remover trailing slash y forzar HTTPS de nuevo
-  backendUrl = backendUrl.replace(/\/+$/, '').replace('http://', 'https://');
-  
-  console.log('✅ [API] URL final del backend:', backendUrl);
+  const backendUrl = detectBackendUrl();
   
   return {
     env: 'production',
@@ -110,137 +74,44 @@ console.log(`✅ [API] Configuración: ${BASE_URL}`);
    🛡️ WRAPPER FETCH CON PROTECCIÓN MIXED CONTENT
    ================================================================ */
 async function secureApiCall(endpoint, options = {}) {
-  let fullUrl = `${BASE_URL.replace('http://', 'https://')}${endpoint}`;
+  let fullUrl = `${BASE_URL}${endpoint}`;
   
-  // 🛡️ VERIFICACIÓN CRÍTICA: Forzar HTTPS en producción
-  if (window.location.protocol === 'https:') {
-    if (fullUrl.startsWith('http://')) {
-      fullUrl = fullUrl.replace('http://', 'https://');
-      console.log('🔒 [API] Mixed Content prevención - Convertido a HTTPS:', fullUrl);
-    } else if (!fullUrl.startsWith('https://')) {
-      fullUrl = 'https://' + fullUrl;
-      console.log('🔒 [API] Mixed Content prevención - Añadido protocolo HTTPS:', fullUrl);
-    }
-  }
-  
-  // 🚨 VERIFICACIÓN EXTRA: Asegurar que NUNCA usemos HTTP en producción
-  if (fullUrl.startsWith('http://') && !fullUrl.includes('localhost')) {
+  // Asegurar HTTPS en producción
+  if (API_CONFIG.env === 'production' && !fullUrl.startsWith('https://')) {
     fullUrl = fullUrl.replace('http://', 'https://');
-    console.error('🚨 [API] CRÍTICO: Detectado HTTP en producción, forzando HTTPS:', fullUrl);
   }
   
   console.log(`📡 [API] Request: ${options.method || 'GET'} ${fullUrl}`);
   
   try {
-    // ✅ Configuración de headers por defecto
     const defaultHeaders = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      // 🔒 Headers de seguridad
       'X-Requested-With': 'XMLHttpRequest',
       'Cache-Control': 'no-cache'
     };
     
-    // 🔧 Merge headers
-    const finalHeaders = {
-      ...defaultHeaders,
-      ...(options.headers || {})
-    };
+    const response = await fetch(fullUrl, {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...(options.headers || {})
+      },
+      mode: 'cors',
+      credentials: 'omit',
+      cache: 'no-cache'
+    });
     
-    // 🚀 Ejecutar fetch primera vez
-    let response;
-    
-    try {
-      response = await fetch(fullUrl, {
-        ...options,
-        headers: finalHeaders,
-        // ✅ Configuraciones adicionales de seguridad
-        mode: 'cors',
-        credentials: 'omit', // No enviar cookies por defecto
-        cache: 'no-cache'
-      });
-    } catch (fetchError) {
-      // 🛡️ SI FALLA POR MIXED CONTENT, INTERCEPTAR Y REINTENTAR
-      if (fetchError.message.includes('Mixed Content') || 
-          fetchError.message.includes('insecure') ||
-          fullUrl.includes('http://')) {
-        
-        console.log('🔒 [API] Error Mixed Content detectado, forzando HTTPS...');
-        const httpsUrl = fullUrl.replace('http://', 'https://');
-        console.log(`🔒 [API] Reintentando con: ${httpsUrl}`);
-        
-        response = await fetch(httpsUrl, {
-          ...options,
-          headers: finalHeaders,
-          mode: 'cors',
-          credentials: 'omit',
-          cache: 'no-cache'
-        });
-      } else {
-        throw fetchError;
-      }
-    }
-    
-    // 🚨 VERIFICACIÓN CRÍTICA: Mixed Content
-    if (window.location.protocol === 'https:' && response.url.startsWith('http://')) {
-      const mixedContentError = `❌ MIXED CONTENT DETECTADO: 
-      - Página: ${window.location.protocol}//${window.location.host}
-      - API: ${response.url}
-      - Solución: Configurar VITE_API_URL con HTTPS`;
-      
-      console.error(mixedContentError);
-      throw new Error('Mixed Content: La API debe usar HTTPS cuando el frontend usa HTTPS');
-    }
-    
-    // ✅ Verificar respuesta HTTP
     if (!response.ok) {
-      let errorBody;
-      const contentType = response.headers.get('content-type');
-      
-      try {
-        if (contentType && contentType.includes('application/json')) {
-          errorBody = await response.json();
-        } else {
-          errorBody = await response.text();
-        }
-      } catch (parseError) {
-        errorBody = `Error ${response.status}: ${response.statusText}`;
-      }
-      
-      console.error(`❌ [API] Error ${response.status}:`, errorBody);
-      throw new Error(`HTTP ${response.status}: ${JSON.stringify(errorBody)}`);
+      const errorBody = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorBody}`);
     }
     
-    // ✅ Procesar respuesta exitosa
-    const contentType = response.headers.get('content-type');
-    let data;
-    
-    if (contentType && contentType.includes('application/json')) {
-      data = await response.json();
-    } else {
-      data = await response.text();
-    }
-    
-    console.log(`✅ [API] Success: ${options.method || 'GET'} ${endpoint}`);
+    const data = await response.json();
     return { data, response };
     
   } catch (error) {
-    // 🚨 Manejo de errores robusto
     console.error(`❌ [API] Error en ${endpoint}:`, error);
-    
-    // Errores específicos para mejor debugging
-    if (error.message.includes('Mixed Content')) {
-      throw new Error(`🔒 Mixed Content: Verifica que VITE_API_URL use HTTPS en producción`);
-    }
-    
-    if (error.message.includes('CORS')) {
-      throw new Error(`🌐 CORS Error: El backend debe permitir el origen ${window.location.origin}`);
-    }
-    
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      throw new Error(`🌐 Network Error: No se puede conectar con ${BASE_URL}`);
-    }
-    
     throw error;
   }
 }
