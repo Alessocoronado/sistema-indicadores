@@ -11,8 +11,7 @@ const ENV_CONFIG = {
     protocol: 'http'
   },
   production: {
-    backendUrl: import.meta.env.VITE_API_URL || 
-                'https://backend-indicadores-production.up.railway.app',
+    backendUrl: 'https://backend-indicadores-production.up.railway.app',
     protocol: 'https',
     enforceHttps: true
   }
@@ -21,20 +20,14 @@ const ENV_CONFIG = {
 // 🔍 DETECCIÓN AUTOMÁTICA DE BACKEND URL
 function detectBackendUrl() {
   const currentDomain = window.location.hostname;
-  const apiUrl = import.meta.env.VITE_API_URL;
-  
-  if (apiUrl) {
-    console.log('🔒 [API] Usando URL desde variables de entorno:', apiUrl);
-    return apiUrl.startsWith('https://') ? apiUrl : `https://${apiUrl}`;
-  }
   
   // Solo para desarrollo local
   if (currentDomain.includes('localhost')) {
-    return 'http://localhost:8000';
+    return ENV_CONFIG.development.backendUrl;
   }
   
-  // Fallback seguro para producción
-  return 'https://backend-indicadores-production.up.railway.app';
+  // En producción, siempre usar HTTPS
+  return ENV_CONFIG.production.backendUrl;
 }
 
 /* ================================================================
@@ -56,6 +49,7 @@ function detectEnvironment() {
   // ✅ Producción (Railway)
   console.log('🚀 [API] Entorno: PRODUCCIÓN');
   const backendUrl = detectBackendUrl();
+  console.log('✅ [API] URL del backend:', backendUrl);
   
   return {
     env: 'production',
@@ -68,18 +62,13 @@ function detectEnvironment() {
 const API_CONFIG = detectEnvironment();
 const BASE_URL = API_CONFIG.baseUrl;
 
-console.log(`✅ [API] Configuración: ${BASE_URL}`);
+console.log(`✅ [API] Configuración final: ${BASE_URL}`);
 
 /* ================================================================
    🛡️ WRAPPER FETCH CON PROTECCIÓN MIXED CONTENT
    ================================================================ */
 async function secureApiCall(endpoint, options = {}) {
-  let fullUrl = `${BASE_URL}${endpoint}`;
-  
-  // Asegurar HTTPS en producción
-  if (API_CONFIG.env === 'production' && !fullUrl.startsWith('https://')) {
-    fullUrl = fullUrl.replace('http://', 'https://');
-  }
+  const fullUrl = `${BASE_URL}${endpoint}`;
   
   console.log(`📡 [API] Request: ${options.method || 'GET'} ${fullUrl}`);
   
@@ -108,6 +97,7 @@ async function secureApiCall(endpoint, options = {}) {
     }
     
     const data = await response.json();
+    console.log(`✅ [API] Success:`, data);
     return { data, response };
     
   } catch (error) {
