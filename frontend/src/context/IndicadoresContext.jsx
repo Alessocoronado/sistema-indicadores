@@ -63,8 +63,8 @@ export const IndicadoresProvider = ({ children }) => {
       const response = await indicadoresApi.getIndicadores();
       console.log('🔍 CONTEXTO - Respuesta de la API:', response);
       
-      if (Array.isArray(response.data)) {
-        dataToUse = response.data;
+      if (Array.isArray(response)) {
+        dataToUse = response;
         console.log('✅ CONTEXTO - API funcionó correctamente, datos cargados:', dataToUse.length);
       } else {
         throw new Error('La API no devolvió un array válido de indicadores');
