@@ -15,7 +15,7 @@
         "ENVIRONMENT": "production",
         "FORCE_HTTPS": "true",
         "RAILWAY_FORCE_HTTPS": "true",
-        "ALLOWED_ORIGINS": "https://sistema-indicadores-production-0b2b.up.railway.app,http://localhost:5173,http://localhost:3000"
+        "ALLOWED_ORIGINS": "https://${RAILWAY_STATIC_URL},https://*.railway.app,http://localhost:5173,http://localhost:3000"
       }
     }
   }
