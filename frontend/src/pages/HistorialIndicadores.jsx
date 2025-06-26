@@ -12,13 +12,6 @@ import { Label } from '@/components/ui/label';
 const HistorialIndicadores = () => {
   const { indicadores, vps, areas, estados, exportarXLSX } = useIndicadores();
   
-  console.log('🔍 HISTORIAL - Componente renderizándose');
-  console.log('🔍 HISTORIAL - indicadores:', indicadores);
-  console.log('🔍 HISTORIAL - indicadores es array?:', Array.isArray(indicadores));
-  console.log('🔍 HISTORIAL - indicadores length:', indicadores?.length);
-  console.log('🔍 HISTORIAL - vps:', vps);
-  console.log('🔍 HISTORIAL - areas:', areas);
-  
   // Estados para filtros jerárquicos: VP → Área → Indicador
   const [vpFiltro, setVpFiltro] = useState('');
   const [areaFiltro, setAreaFiltro] = useState('');

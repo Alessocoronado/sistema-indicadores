@@ -34,37 +34,22 @@ const Dashboard = () => {
 
   // Filtrar indicadores cuando cambia el área seleccionada
   useEffect(() => {
-    console.log('🔍 DASHBOARD - useEffect ejecutándose');
-    console.log('🔍 DASHBOARD - indicadores:', indicadores);
-    console.log('🔍 DASHBOARD - areaSeleccionada:', areaSeleccionada);
-    console.log('🔍 DASHBOARD - indicadores es array?:', Array.isArray(indicadores));
-    console.log('🔍 DASHBOARD - indicadores length:', indicadores?.length);
-    
     if (!Array.isArray(indicadores)) {
-      console.warn('⚠️ DASHBOARD - indicadores no es array, seteando []');
       setIndicadoresFiltrados([]);
       return;
     }
     
     if (areaSeleccionada === 'Todas') {
-      console.log('✅ DASHBOARD - Mostrando todas las áreas');
       setIndicadoresFiltrados(indicadores);
     } else {
       const filtrados = indicadores.filter(ind => ind && ind.area === areaSeleccionada);
-      console.log('✅ DASHBOARD - Filtrados por área:', filtrados);
       setIndicadoresFiltrados(filtrados);
     }
   }, [indicadores, areaSeleccionada]);
 
   // Calcular estadísticas basadas en los indicadores filtrados
   const estadisticasFiltradas = React.useMemo(() => {
-    console.log('🔍 DASHBOARD - Calculando estadísticas');
-    console.log('🔍 DASHBOARD - indicadoresFiltrados:', indicadoresFiltrados);
-    console.log('🔍 DASHBOARD - indicadoresFiltrados es array?:', Array.isArray(indicadoresFiltrados));
-    console.log('🔍 DASHBOARD - indicadoresFiltrados length:', indicadoresFiltrados?.length);
-    
     if (!Array.isArray(indicadoresFiltrados)) {
-      console.warn('⚠️ DASHBOARD - indicadoresFiltrados no es array');
       return {
         totalIndicadores: 0,
         totalHitos: 0,
@@ -77,15 +62,10 @@ const Dashboard = () => {
     
     const todosLosHitos = indicadoresFiltrados.flatMap(ind => {
       if (!ind || !Array.isArray(ind.hitos)) {
-        console.log('⚠️ DASHBOARD - Indicador sin hitos válidos:', ind);
         return [];
       }
-      console.log('✅ DASHBOARD - Indicador con hitos:', ind.nombreIndicador, 'hitos:', ind.hitos.length);
       return ind.hitos.filter(hito => hito);
     });
-    
-    console.log('🔍 DASHBOARD - todosLosHitos:', todosLosHitos);
-    console.log('🔍 DASHBOARD - total hitos encontrados:', todosLosHitos.length);
     
     const hitosCompletados = todosLosHitos.filter(hito => hito && hito.estadoHito === 'Completado').length;
     const hitosEnProgreso = todosLosHitos.filter(hito => hito && hito.estadoHito === 'En Progreso').length;
@@ -100,7 +80,7 @@ const Dashboard = () => {
     const promedioAvance = todosLosHitos.length > 0 ? 
       Math.round(avanceTotal / todosLosHitos.length * 100) / 100 : 0;
 
-    const stats = {
+    return {
       totalIndicadores: indicadoresFiltrados.length,
       totalHitos: todosLosHitos.length,
       hitosCompletados,
@@ -108,9 +88,6 @@ const Dashboard = () => {
       hitosPorComenzar,
       promedioAvance
     };
-    
-    console.log('📊 DASHBOARD - Estadísticas calculadas:', stats);
-    return stats;
   }, [indicadoresFiltrados]);
 
   const containerVariants = {
@@ -155,38 +132,6 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      
-      {/* Panel de debugging visual */}
-      <div className="p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
-        <h3 className="font-bold mb-2">🔍 DEBUG - Valores en tiempo real:</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div>
-            <strong>indicadores (contexto):</strong>
-            <p>Array: {Array.isArray(indicadores) ? 'Sí' : 'No'}</p>
-            <p>Length: {Array.isArray(indicadores) ? indicadores.length : 'N/A'}</p>
-          </div>
-          <div>
-            <strong>indicadoresFiltrados:</strong>
-            <p>Array: {Array.isArray(indicadoresFiltrados) ? 'Sí' : 'No'}</p>
-            <p>Length: {Array.isArray(indicadoresFiltrados) ? indicadoresFiltrados.length : 'N/A'}</p>
-          </div>
-          <div>
-            <strong>estadisticasFiltradas:</strong>
-            <p>Total Indicadores: {estadisticasFiltradas?.totalIndicadores ?? 'N/A'}</p>
-            <p>Total Hitos: {estadisticasFiltradas?.totalHitos ?? 'N/A'}</p>
-          </div>
-          <div>
-            <strong>hitosRecientes:</strong>
-            <p>Array: {Array.isArray(hitosRecientes) ? 'Sí' : 'No'}</p>
-            <p>Length: {Array.isArray(hitosRecientes) ? hitosRecientes.length : 'N/A'}</p>
-          </div>
-        </div>
-      </div>
-      
-      {/* DEBUG: Logs antes del renderizado */}
-      {console.log('🎯 DASHBOARD RENDER - estadisticasFiltradas:', estadisticasFiltradas)}
-      {console.log('🎯 DASHBOARD RENDER - indicadoresFiltrados:', indicadoresFiltrados)}
-      {console.log('🎯 DASHBOARD RENDER - hitosRecientes:', hitosRecientes)}
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

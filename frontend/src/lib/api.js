@@ -173,15 +173,6 @@ export const indicadoresApi = {
    🛠️ UTILIDADES ADICIONALES
    ================================================================ */
 
-// 🔧 Debug: Obtener configuración actual
-export const getApiConfig = () => ({
-  environment: API_CONFIG.env,
-  baseUrl: BASE_URL,
-  protocol: API_CONFIG.protocol,
-  currentPage: `${window.location.protocol}//${window.location.host}`,
-  timestamp: new Date().toISOString()
-});
-
 // 🧪 Test de conectividad
 export const testConnection = async () => {
   try {
