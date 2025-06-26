@@ -2,6 +2,7 @@ from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from .routers import indicadores
+from .routers import auth_oauth
 from .database import engine
 from .models import indicador
 import os
@@ -163,6 +164,7 @@ async def add_security_headers(request, call_next):
 
 # Incluir routers con prefijo /api
 app.include_router(indicadores.router, prefix="/api")
+app.include_router(auth_oauth.router)
 
 @app.get("/")
 def read_root():

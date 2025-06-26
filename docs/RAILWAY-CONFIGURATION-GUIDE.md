@@ -46,6 +46,9 @@ DATABASE_URL=postgresql://user:password@host:port/database
 SECRET_KEY=tu-clave-super-secreta-256-bits-aqui
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+AZURE_CLIENT_ID=tu-cliente-azure-id
+AZURE_TENANT_ID=tu-tenant-azure-id
+AZURE_CLIENT_SECRET=tu-secreto-azure
 
 # 🌐 CORS - ¡CRÍTICO! URLs EXACTAS
 ALLOWED_ORIGINS=https://[TU-FRONTEND-URL].up.railway.app,http://localhost:5173
@@ -71,6 +74,8 @@ ENABLE_SECURITY_HEADERS=true
 ```bash
 # 🎯 CRÍTICO: URL DEL BACKEND
 VITE_API_URL=https://[TU-BACKEND-URL].up.railway.app
+VITE_AZURE_CLIENT_ID=tu-cliente-azure-id
+VITE_AZURE_TENANT_ID=tu-tenant-azure-id
 
 # 🏗️ BUILD
 NODE_ENV=production

@@ -14,4 +14,6 @@ openpyxl==3.1.2
 
 # ✅ NUEVAS: Dependencias de seguridad
 slowapi==0.1.9                    # Rate limiting
-python-decouple==3.8              # Environment variables seguras 
+python-decouple==3.8              # Environment variables seguras
+msal==1.25.0                      # Microsoft authentication library
+requests==2.31.0

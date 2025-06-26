@@ -124,6 +124,9 @@ DATABASE_URL=${DATABASE_URL}  # Railway lo maneja automáticamente
 SECRET_KEY=${SECRET_KEY}                    # Railway auto-genera
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+AZURE_TENANT_ID=${AZURE_TENANT_ID}
+AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
 
 # 🗄️ Database  
 DATABASE_URL=${DATABASE_URL}               # Railway auto-genera
