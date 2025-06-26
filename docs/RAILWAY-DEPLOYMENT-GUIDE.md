@@ -54,6 +54,9 @@ DATABASE_URL=postgresql://username:password@host:port/dbname
 SECRET_KEY=railway-auto-generated-or-custom
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+AZURE_CLIENT_ID=<tu-client-id>
+AZURE_TENANT_ID=<tu-tenant-id>
+AZURE_CLIENT_SECRET=<tu-secret>
 
 # 🗄️ Database (Auto-generada por Railway)
 DATABASE_URL=postgresql://...
@@ -141,6 +144,9 @@ https://sistema-indicadores-production-xyz789.up.railway.app
 SECRET_KEY=horizons-super-secret-key-2024-railway
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+AZURE_CLIENT_ID=<tu-client-id>
+AZURE_TENANT_ID=<tu-tenant-id>
+AZURE_CLIENT_SECRET=<tu-secret>
 
 # === CORS (REEMPLAZA CON TUS URLs REALES) ===
 ALLOWED_ORIGINS=https://sistema-indicadores-production-xyz789.up.railway.app

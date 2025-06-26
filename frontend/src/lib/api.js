@@ -169,6 +169,18 @@ export const indicadoresApi = {
   }
 };
 
+export const authApi = {
+  verifyToken: async (token) => {
+    const result = await secureApiCall('/verify-token', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return result.data;
+  }
+};
+
 /* ================================================================
    🛠️ UTILIDADES ADICIONALES
    ================================================================ */

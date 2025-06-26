@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { BarChart3, PlusCircle, RefreshCw, ClipboardList, Menu, X, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import SignInButton from './SignInButton';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -39,7 +40,7 @@ const Layout = ({ children }) => {
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
           
-          <nav className="hidden md:flex space-x-6">
+          <nav className="hidden md:flex space-x-6 items-center">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -55,6 +56,7 @@ const Layout = ({ children }) => {
                 <span>{item.label}</span>
               </Link>
             ))}
+            <SignInButton />
           </nav>
         </div>
       </header>
@@ -84,6 +86,7 @@ const Layout = ({ children }) => {
                 <span>{item.label}</span>
               </Link>
             ))}
+            <SignInButton />
           </nav>
         </motion.div>
       )}

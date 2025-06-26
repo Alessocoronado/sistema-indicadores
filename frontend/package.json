@@ -20,6 +20,8 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.2.14",
     "@syncfusion/ej2-react-gantt": "^29.2.7",
+    "@azure/msal-browser": "^2.38.0",
+    "@azure/msal-react": "^2.0.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^4.1.0",

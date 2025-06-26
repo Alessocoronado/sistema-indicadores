@@ -230,11 +230,16 @@ SECRET_KEY=clave-super-secreta-256-bits
 ALLOWED_ORIGINS=["https://tu-frontend.railway.app"]
 RATE_LIMIT_REQUESTS=1000
 ENVIRONMENT=production
+AZURE_CLIENT_ID=tu-cliente-azure-id
+AZURE_TENANT_ID=tu-tenant-azure-id
+AZURE_CLIENT_SECRET=tu-secreto-azure
 ```
 
 **Frontend:**
 ```env
 VITE_API_URL=https://tu-backend.railway.app
+VITE_AZURE_CLIENT_ID=tu-cliente-azure-id
+VITE_AZURE_TENANT_ID=tu-tenant-azure-id
 ```
 
 Ver guía completa: [`docs/RAILWAY-DEPLOYMENT-GUIDE.md`](./docs/RAILWAY-DEPLOYMENT-GUIDE.md)
