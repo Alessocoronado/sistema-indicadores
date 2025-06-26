@@ -343,3 +343,4 @@ Para soporte técnico o preguntas:
 ---
 
 **🎉 ¡Horizons - Impulsando el éxito empresarial con datos!** 
+ Añadir Loggin
